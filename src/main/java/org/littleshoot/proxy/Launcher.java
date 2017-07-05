@@ -1,5 +1,9 @@
 package org.littleshoot.proxy;
 
+import java.io.File;
+import java.net.InetSocketAddress;
+import java.util.Arrays;
+
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.HelpFormatter;
@@ -11,13 +15,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.xml.DOMConfigurator;
 import org.littleshoot.proxy.extras.SelfSignedMitmManager;
 import org.littleshoot.proxy.impl.DefaultHttpProxyServer;
+import org.littleshoot.proxy.impl.MyProxyAuthenticator;
 import org.littleshoot.proxy.impl.ProxyUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.io.File;
-import java.net.InetSocketAddress;
-import java.util.Arrays;
 
 /**
  * Launches a new HTTP proxy.
@@ -88,9 +89,11 @@ public class Launcher {
 
 
         System.out.println("About to start server on port: " + port);
-        HttpProxyServerBootstrap bootstrap = DefaultHttpProxyServer
+        
+		HttpProxyServerBootstrap bootstrap = DefaultHttpProxyServer
                 .bootstrapFromFile("./littleproxy.properties")
                 .withPort(port)
+                .withProxyAuthenticator(new MyProxyAuthenticator())
                 .withAllowLocalOnly(false);
 
         if (cmd.hasOption(OPTION_NIC)) {
